@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'features/auth/presentation/login_screen.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -7,11 +8,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: Center(
-          child: Text('App structure ready'),
-        ),
-      ),
+      home:LoginScreen(),
     );
   }
 }
