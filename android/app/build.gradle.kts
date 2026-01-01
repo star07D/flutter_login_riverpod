@@ -1,5 +1,8 @@
 plugins {
     id("com.android.application")
+    // START: FlutterFire Configuration
+    id("com.google.gms.google-services")
+    // END: FlutterFire Configuration
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
@@ -9,6 +12,8 @@ android {
     namespace = "com.example.flutter_login_riverpod"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
+
+
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -38,6 +43,12 @@ android {
         }
     }
 }
+
+dependencies {
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation("com.google.firebase:firebase-auth")
+}
+
 
 flutter {
     source = "../.."

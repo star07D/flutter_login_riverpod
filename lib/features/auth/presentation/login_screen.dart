@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../provider/login_provider.dart';
 
-class LoginScreen extends StatefulWidget {
+
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _emailController = TextEditingController();
@@ -15,6 +18,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loginState = ref.watch(loginProvider);
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -45,6 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 32),
 
+                /// EMAIL
                 TextFormField(
                   controller: _emailController,
                   decoration: const InputDecoration(
@@ -64,6 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 16),
 
+                /// PASSWORD
                 TextFormField(
                   controller: _passwordController,
                   obscureText: true,
@@ -82,19 +89,42 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 ),
 
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
 
+                /// ERROR MESSAGE
+                if (loginState.errorMessage != null) ...[
+                  Text(
+                    loginState.errorMessage!,
+                    style: const TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 12),
+                ],
+
+                /// LOGIN BUTTON
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: loginState.isLoading
+                      ? null
+                      : () {
                     if (_formKey.currentState!.validate()) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Login clicked'),
-                        ),
+                      ref.read(loginProvider.notifier).login(
+                        email:
+                        _emailController.text.trim(),
+                        password:
+                        _passwordController.text.trim(),
                       );
                     }
                   },
-                  child: const Text('Login'),
+                  child: loginState.isLoading
+                      ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                      : const Text('Login'),
                 ),
 
                 const Spacer(),

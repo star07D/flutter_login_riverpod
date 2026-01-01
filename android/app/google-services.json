@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "176747950072",
+    "project_id": "flutter-login-riverpod",
+    "storage_bucket": "flutter-login-riverpod.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:176747950072:android:4b63a7f3b718c4f305b00d",
+        "android_client_info": {
+          "package_name": "com.example.flutter_login_riverpod"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCPX1LGdyhdoUvzg02q9jKloTsa5XBgFE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
