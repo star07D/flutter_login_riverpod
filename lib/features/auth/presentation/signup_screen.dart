@@ -2,17 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../provider/login_provider.dart';
-import 'signup_screen.dart';
 import 'home_screen.dart';
 
-class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({super.key});
+class SignupScreen extends ConsumerStatefulWidget {
+  const SignupScreen({super.key});
 
   @override
-  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _LoginScreenState extends ConsumerState<LoginScreen> {
+class _SignupScreenState extends ConsumerState<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -28,32 +27,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final state = ref.watch(loginProvider);
 
-
-    ref.listen(loginProvider, (previous, next) {
-      if (previous?.isLoading == true &&
-          next.isLoading == false &&
-          next.errorMessage == null) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
-        );
-      }
-
-      if (next.errorMessage != null) {
-        ScaffoldMessenger.of(context)
-          ..clearSnackBars()
-          ..showSnackBar(
-            SnackBar(
-              content: Text(next.errorMessage!),
-              backgroundColor: Colors.red,
-            ),
-          );
-      }
-    });
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login'),
+        title: const Text('Create Account'),
         centerTitle: true,
       ),
       body: Center(
@@ -63,7 +39,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             key: _formKey,
             child: Column(
               children: [
-                const Icon(Icons.lock_outline, size: 72),
+                const Icon(Icons.person_add_outlined, size: 72),
                 const SizedBox(height: 24),
 
                 /// EMAIL
@@ -105,58 +81,32 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                 const SizedBox(height: 24),
 
-                /// LOGIN BUTTON
+                /// SIGNUP BUTTON (INSTANT NAVIGATION)
                 SizedBox(
                   width: double.infinity,
                   height: 48,
                   child: ElevatedButton(
                     onPressed: state.isLoading
                         ? null
-                        : () async {
+                        : () {
                       if (_formKey.currentState!.validate()) {
 
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (_) => const HomeScreen()),
+                          MaterialPageRoute(
+                            builder: (_) => const HomeScreen(),
+                          ),
                         );
 
-                        ref.read(loginProvider.notifier).login(
+
+                        ref.read(loginProvider.notifier).signup(
                           email: _emailController.text.trim(),
-                          password: _passwordController.text.trim(),
+                          password:
+                          _passwordController.text.trim(),
                         );
                       }
                     },
-
-                    child: state.isLoading
-                        ? const SizedBox(
-                      height: 22,
-                      width: 22,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                        : const Text('Login'),
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
-                /// CREATE ACCOUNT
-                TextButton(
-                  onPressed: state.isLoading
-                      ? null
-                      : () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const SignupScreen(),
-                      ),
-                    );
-                  },
-                  child: const Text(
-                    'Create new account',
-                    style: TextStyle(fontSize: 16),
+                    child: const Text('Create Account'),
                   ),
                 ),
               ],

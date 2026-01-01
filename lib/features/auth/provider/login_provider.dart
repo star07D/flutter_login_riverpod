@@ -1,29 +1,40 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'login_state.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
+final loginProvider =
+StateNotifierProvider<LoginNotifier, LoginState>((ref) {
+  return LoginNotifier();
+});
 
 class LoginNotifier extends StateNotifier<LoginState> {
   LoginNotifier() : super(const LoginState());
 
-  Future<void> logout() async {
-    await FirebaseAuth.instance.signOut();
-  }
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-
-
-
-  final _auth = FirebaseAuth.instance;
 
   Future<void> login({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+    } catch (e) {
+      // Optional
+    }
+  }
+
+  Future<void> signup({
     required String email,
     required String password,
   }) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
     try {
-      await _auth.signInWithEmailAndPassword(
+      await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -32,18 +43,17 @@ class LoginNotifier extends StateNotifier<LoginState> {
     } on FirebaseAuthException catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: e.message ?? 'Login failed',
+        errorMessage: e.message ?? 'Signup failed',
+      );
+    } catch (_) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: 'Something went wrong',
       );
     }
   }
+  Future<void> logout() async {
+    await _auth.signOut();
+    state = const LoginState();
+  }
 }
-
-final authStateProvider = StreamProvider<User?>((ref) {
-  return FirebaseAuth.instance.authStateChanges();
-});
-
-
-final loginProvider =
-StateNotifierProvider<LoginNotifier, LoginState>(
-      (ref) => LoginNotifier(),
-);

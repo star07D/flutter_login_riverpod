@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'features/auth/presentation/login_screen.dart';
+import 'package:flutter_login_riverpod/features/auth/provider/auth_state_provider.dart';
 import 'features/auth/presentation/home_screen.dart';
-import 'features/auth/provider/login_provider.dart';
+import 'features/auth/presentation/login_screen.dart';
 
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
@@ -22,14 +22,10 @@ class MyApp extends ConsumerWidget {
           return const LoginScreen();
         },
         loading: () => const Scaffold(
-          body: Center(
-            child: CircularProgressIndicator(),
-          ),
+          body: Center(child: CircularProgressIndicator()),
         ),
-        error: (error, _) => Scaffold(
-          body: Center(
-            child: Text(error.toString()),
-          ),
+        error: (e, _) => Scaffold(
+          body: Center(child: Text(e.toString())),
         ),
       ),
     );
