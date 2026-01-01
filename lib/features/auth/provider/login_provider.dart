@@ -1,29 +1,20 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'login_state.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-/// STATE
-class LoginState {
-  final bool isLoading;
-  final String? errorMessage;
 
-  const LoginState({
-    this.isLoading = false,
-    this.errorMessage,
-  });
-
-  LoginState copyWith({
-    bool? isLoading,
-    String? errorMessage,
-  }) {
-    return LoginState(
-      isLoading: isLoading ?? this.isLoading,
-      errorMessage: errorMessage,
-    );
-  }
-}
-
-/// NOTIFIER
 class LoginNotifier extends StateNotifier<LoginState> {
   LoginNotifier() : super(const LoginState());
+
+  Future<void> logout() async {
+    await FirebaseAuth.instance.signOut();
+  }
+
+
+
+
+  final _auth = FirebaseAuth.instance;
 
   Future<void> login({
     required String email,
@@ -31,18 +22,26 @@ class LoginNotifier extends StateNotifier<LoginState> {
   }) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
-    if (email == 'test@test.com' && password == '123456') {
       state = state.copyWith(isLoading: false);
-    } else {
+    } on FirebaseAuthException catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Invalid email or password',
+        errorMessage: e.message ?? 'Login failed',
       );
     }
   }
 }
+
+final authStateProvider = StreamProvider<User?>((ref) {
+  return FirebaseAuth.instance.authStateChanges();
+});
+
 
 final loginProvider =
 StateNotifierProvider<LoginNotifier, LoginState>(

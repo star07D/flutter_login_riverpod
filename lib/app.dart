@@ -1,14 +1,37 @@
 import 'package:flutter/material.dart';
-import 'features/auth/presentation/login_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MyApp extends StatelessWidget {
+import 'features/auth/presentation/login_screen.dart';
+import 'features/auth/presentation/home_screen.dart';
+import 'features/auth/provider/login_provider.dart';
+
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authStateProvider);
+
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home:LoginScreen(),
+      home: authState.when(
+        data: (user) {
+          if (user != null) {
+            return const HomeScreen();
+          }
+          return const LoginScreen();
+        },
+        loading: () => const Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+        error: (error, _) => Scaffold(
+          body: Center(
+            child: Text(error.toString()),
+          ),
+        ),
+      ),
     );
   }
 }
