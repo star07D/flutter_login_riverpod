@@ -2,114 +2,118 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../provider/login_provider.dart';
-import 'home_screen.dart';
 
-class SignupScreen extends ConsumerStatefulWidget {
+class SignupScreen extends ConsumerWidget {
   const SignupScreen({super.key});
 
-  @override
-  ConsumerState<SignupScreen> createState() => _SignupScreenState();
-}
-
-class _SignupScreenState extends ConsumerState<SignupScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
+  InputDecoration _inputDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 14,
+      ),
+    );
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(loginProvider);
 
+    ref.listen(loginProvider, (_, next) {
+      if (next.errorMessage != null) {
+        ScaffoldMessenger.of(context)
+          ..clearSnackBars()
+          ..showSnackBar(
+            SnackBar(content: Text(next.errorMessage!)),
+          );
+      }
+    });
+
+    final emailController = TextEditingController();
+    final passwordController = TextEditingController();
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create Account'),
-        centerTitle: true,
-      ),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                const Icon(Icons.person_add_outlined, size: 72),
-                const SizedBox(height: 24),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 24),
 
-                /// EMAIL
-                TextFormField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(),
+                  const Icon(Icons.person_add_outlined, size: 64),
+                  const SizedBox(height: 16),
+
+                  const Text(
+                    'Create Account',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Enter email';
-                    }
-                    if (!value.contains('@')) {
-                      return 'Invalid email';
-                    }
-                    return null;
-                  },
-                ),
 
-                const SizedBox(height: 16),
+                  const SizedBox(height: 32),
 
-                /// PASSWORD
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                    border: OutlineInputBorder(),
+                  TextField(
+                    controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: _inputDecoration('Email'),
                   ),
-                  validator: (value) {
-                    if (value == null || value.length < 6) {
-                      return 'Minimum 6 characters';
-                    }
-                    return null;
-                  },
-                ),
 
-                const SizedBox(height: 24),
+                  const SizedBox(height: 16),
 
-                /// SIGNUP BUTTON (INSTANT NAVIGATION)
-                SizedBox(
-                  width: double.infinity,
-                  height: 48,
-                  child: ElevatedButton(
-                    onPressed: state.isLoading
-                        ? null
-                        : () {
-                      if (_formKey.currentState!.validate()) {
+                  TextField(
+                    controller: passwordController,
+                    obscureText: true,
+                    decoration: _inputDecoration('Password'),
+                  ),
 
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const HomeScreen(),
-                          ),
-                        );
+                  const SizedBox(height: 24),
 
-
+                  SizedBox(
+                    height: 48,
+                    child: ElevatedButton(
+                      onPressed: state.isLoading
+                          ? null
+                          : () {
                         ref.read(loginProvider.notifier).signup(
-                          email: _emailController.text.trim(),
+                          email: emailController.text.trim(),
                           password:
-                          _passwordController.text.trim(),
+                          passwordController.text.trim(),
                         );
-                      }
-                    },
-                    child: const Text('Create Account'),
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: state.isLoading
+                          ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                        ),
+                      )
+                          : const Text(
+                        'Create Account',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:flutter_login_riverpod/features/auth/provider/auth_state_provider.dart';
-import 'features/auth/presentation/home_screen.dart';
 import 'features/auth/presentation/login_screen.dart';
+import 'features/auth/presentation/home_screen.dart';
+import 'features/auth/provider/auth_state_provider.dart';
 
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});

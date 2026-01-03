@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../provider/login_provider.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -19,12 +20,7 @@ class HomeScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: const Center(
-        child: Text(
-          'You are logged in 🎉',
-          style: TextStyle(fontSize: 18),
-        ),
-      ),
+      body: const Center(child: Text('Home')),
     );
   }
 }
